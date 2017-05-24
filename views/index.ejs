@@ -1,0 +1,24 @@
+<% include ./partials/header %>
+
+<div class="container">
+	<h2><%= blizzID %></h2>
+	<ul>
+	<% characters.forEach(function(character){  %>
+		<li><%= character.name %></li>
+	<% }) %>
+	</ul>
+
+	<!-- <h1>Your Score: <%= score %></h1>
+	<form action="/setscore" method="POST">
+		 <div class="form-group">
+		 	<label for="InputBlizzID">Blizzard ID</label>
+		 	<input name="blizzID" type="text" class="form-control" id="InputBlizzID">
+		 </div>
+		 <button type="submit" class="btn btn-default">Submit</button>
+	</form> -->
+
+	<a class="btn btn-default" href="/auth/bnet">Authenticate</button>
+</div>
+
+
+<% include ./partials/footer %>
