@@ -1,12 +1,11 @@
 <% include ./partials/header %>
 
 <div class="container">
-	<h2><%= blizzID %></h2>
-	<ul>
-	<% characters.forEach(function(character){  %>
-		<li><%= character.name %></li>
-	<% }) %>
-	</ul>
+	<div id="profile-header">
+		<h1><%= blizzID %></h1>
+		<h2>WoW Achievement Points: <%= wowAP %></h2>
+	</div>
+	
 
 	<!-- <h1>Your Score: <%= score %></h1>
 	<form action="/setscore" method="POST">

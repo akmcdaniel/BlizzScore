@@ -62,13 +62,13 @@ app.get('/auth/bnet',
 app.get('/auth/bnet/callback',
     passport.authenticate('bnet', { failureRedirect: '/' }),
     function(req, res){
-    	//IncomingMessage.user.battletag
     	user = req.user;
         res.redirect('/');
     });
 
 app.get("/", function(req, res){
 	var characters = [];
+	var wowAP = 0;
 	if(user.token) {
 		console.log(user.token);
 		request('https://us.api.battle.net/wow/user/characters?access_token=' + user.token, function (error, response, body) {
@@ -78,10 +78,16 @@ app.get("/", function(req, res){
 			characters = JSON.parse(body).characters;
 			console.log(characters);
 
-			res.render("index", {score: score, blizzID: user.battletag, characters: characters });
+			characters.forEach(function(character){
+				if(character.achievementPoints > wowAP){
+					wowAP = character.achievementPoints;
+				};
+			});
+
+			res.render("index", {score: score, blizzID: user.battletag, wowAP: wowAP });
 		});
 	} else {
-		res.render("index", {score: score, blizzID: user.battletag, characters: characters });
+		res.render("index", {score: score, blizzID: user.battletag, wowAP: wowAP });
 	}
 	
 });
