@@ -84,7 +84,14 @@ app.get("/", function(req, res){
 				};
 			});
 
-			res.render("index", {score: score, blizzID: user.battletag, wowAP: wowAP });
+			//https://www.npmjs.com/package/request#custom-http-headers
+			request({ url: 'https://owapi.net/api/v3/u/Dangerface-1787/stats', headers: { 'User-Agent': 'BlizzScore' }}, function(error, response, body){
+				console.log('error:', error);
+				console.log('statusCode:', response && response.statusCode);
+				console.log(body);
+
+				res.render("index", {score: score, blizzID: user.battletag, wowAP: wowAP });
+			});		
 		});
 	} else {
 		res.render("index", {score: score, blizzID: user.battletag, wowAP: wowAP });
