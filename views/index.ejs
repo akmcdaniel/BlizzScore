@@ -1,12 +1,14 @@
 <% include ./partials/header %>
 
 <div class="container">
-	<div id="profile-header">
-		<h1><%= blizzID %></h1>
-		<h2>WoW Achievement Points: <%= wowAP %></h2>
-	</div>
+	<form>
+		<div class="form-group">
+			<label for="battletag">Battle Tag</label>
+			<input id="battletag">
+		</div>
+	</form>
 
-	<a class="btn btn-default" href="/auth/bnet">Authenticate</button>
+	<a class="btn btn-default" href="/auth/bnet">Authenticate</a>
 </div>
 
 

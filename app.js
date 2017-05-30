@@ -53,7 +53,11 @@ app.use(passport.session());
 var score;
 var user = {
 	battletag: "",
-	token: ""
+	token: "",
+	wow: {
+		achievementPoints: 0,
+		mounts: 0
+	}
 };
 
 app.get('/auth/bnet',
@@ -61,42 +65,47 @@ app.get('/auth/bnet',
 
 app.get('/auth/bnet/callback',
     passport.authenticate('bnet', { failureRedirect: '/' }),
+
     function(req, res){
-    	user = req.user;
-        res.redirect('/');
-    });
+    	user.battletag = req.user.battletag;
+    	user.token = req.user.token;
+    	console.log(user.wow.achievementPoints);
+    	res.redirect("/profile/" + user.battletag.replace("#", "-"));
+    }
+);
 
 app.get("/", function(req, res){
-	var characters = [];
-	var wowAP = 0;
-	if(user.token) {
-		console.log(user.token);
-		request('https://us.api.battle.net/wow/user/characters?access_token=' + user.token, function (error, response, body) {
-			console.log('error:', error);
-			console.log('statusCode:', response && response.statusCode);
+	res.render("index");	
+});
 
-			characters = JSON.parse(body).characters;
-			console.log(characters);
+app.get("/profile/:battletag", function(req, res){
+	var WoWcharacters = [];
 
-			characters.forEach(function(character){
-				if(character.achievementPoints > wowAP){
-					wowAP = character.achievementPoints;
-				};
-			});
+	//https://www.npmjs.com/package/request#custom-http-headers
+	request({ url: 'https://owapi.net/api/v3/u/' + user.battletag.replace("#", "-") + '/stats', headers: { 'User-Agent': 'BlizzScore' }}, function(error, response, body){
+		console.log('error:', error);
+		console.log('statusCode:', response && response.statusCode);
+		console.log(body);
 
-			//https://www.npmjs.com/package/request#custom-http-headers
-			request({ url: 'https://owapi.net/api/v3/u/Dangerface-1787/stats', headers: { 'User-Agent': 'BlizzScore' }}, function(error, response, body){
+		if(user.token) {
+			request('https://us.api.battle.net/wow/user/characters?access_token=' + user.token, function (error, response, body) {
 				console.log('error:', error);
 				console.log('statusCode:', response && response.statusCode);
-				console.log(body);
 
-				res.render("index", {score: score, blizzID: user.battletag, wowAP: wowAP });
-			});		
-		});
-	} else {
-		res.render("index", {score: score, blizzID: user.battletag, wowAP: wowAP });
-	}
-	
+				WoWcharacters = JSON.parse(body).characters;
+
+				WoWcharacters.forEach(function(character){
+					if(character.achievementPoints > user.wow.achievementPoints){
+						user.wow.achievementPoints = character.achievementPoints;
+					};
+				});
+
+				res.render("profile", { blizzID: user.battletag, wowAP: user.wow.achievementPoints });
+			});
+		} else {
+			res.render("profile", { blizzID: user.battletag, wowAP: user.wow.achievementPoints });
+		}
+	});	
 });
 
 var options = {
